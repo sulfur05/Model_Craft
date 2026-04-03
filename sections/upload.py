@@ -44,6 +44,7 @@ def _validate_and_preview_dataframe(df: pd.DataFrame):
         )
         return
 
+    # Store basic info for later steps
     st.session_state["dataset"] = df
     st.session_state["numeric_columns"] = numeric_cols
     st.session_state["categorical_columns"] = categorical_cols
@@ -55,9 +56,62 @@ def _validate_and_preview_dataframe(df: pd.DataFrame):
     st.dataframe(df.head())
     st.write("Column types:")
     st.write(df.dtypes.to_frame("dtype"))
+
     st.info(
-        "In simple terms: each row is an example, and each column is a feature or variable. "
-        "Next, you’ll choose which column you want to predict (the target)."
+        "In simple terms: each row is an example, and each column is a feature or variable."
+    )
+
+    st.markdown("---")
+    st.subheader("Choose the target column and problem type")
+
+    # Default target: previously selected, or last column
+    previous_target = st.session_state.get("target_column")
+    columns = list(df.columns)
+
+    if previous_target in columns:
+        default_index = columns.index(previous_target)
+    else:
+        default_index = len(columns) - 1  # last column as a simple default
+
+    target_column = st.selectbox(
+        "Which column do you want to predict? (Target)",
+        options=columns,
+        index=default_index,
+        help="This is the output you care about, e.g. 'price', 'passed_exam', or 'churn'.",
+        key="target_column_select",
+    )
+
+    # Infer problem type from target
+    target_series = df[target_column]
+    unique_values = target_series.nunique(dropna=True)
+
+    if pd.api.types.is_numeric_dtype(target_series):
+        # Heuristic: many unique numbers → regression, few → classification
+        inferred_type = "regression" if unique_values > 20 else "classification"
+    else:
+        inferred_type = "classification"
+
+    type_options = ["classification", "regression"]
+    inferred_index = type_options.index(inferred_type)
+
+    task_type = st.radio(
+        "What kind of problem is this?",
+        options=type_options,
+        index=inferred_index,
+        help=(
+            "Classification is for predicting categories (e.g. yes/no, A/B/C). "
+            "Regression is for predicting numbers (e.g. price, score)."
+        ),
+        key="task_type_radio",
+    )
+
+    # Persist in session state for other sections
+    st.session_state["target_column"] = target_column
+    st.session_state["task_type"] = task_type
+
+    st.write(
+        f"ModelCraft will treat this as a **{task_type}** problem, "
+        f"trying to predict **{target_column}**."
     )
 
 
