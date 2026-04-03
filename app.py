@@ -1,7 +1,7 @@
 import streamlit as st
 
 from sections.upload import dataset_upload_section
-# from sections.eda import eda_section  # later
+from sections.eda import eda_section  # later
 # from sections.preprocessing import preprocessing_section  # later
 # from sections.model_training import model_training_section  # later
 # from sections.explainability import explainability_section  # later
@@ -20,7 +20,7 @@ def main():
     )
 
     dataset_upload_section()
-    # eda_section()
+    eda_section()
     # preprocessing_section()
     # model_training_section()
     # explainability_section()
