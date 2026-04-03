@@ -109,6 +109,10 @@ def dataset_eda(df: pd.DataFrame, numeric_cols, categorical_cols):
             sns.heatmap(corr, cmap="coolwarm", center=0, ax=ax)
             ax.set_title("Correlation heatmap")
             st.pyplot(fig)
+            st.info(
+                "Darker red or blue squares mean stronger relationships between two numeric columns. "
+                "Values near 1 or -1 indicate a strong link; values near 0 mean little or no linear relationship."
+            )
 
 
 def eda_section():
