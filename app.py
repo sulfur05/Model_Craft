@@ -19,14 +19,25 @@ def main():
         """
     )
 
-    dataset_upload_section()
-    eda_section()
-    preprocessing_section()
-    model_training_section()
-    # explainability_section()
-    # export_section()
-    # advisor_section()
+    col_main, col_advisor = st.columns([3, 1])
 
+    with col_main:
+        dataset_upload_section()
+        eda_section()
+        preprocessing_section()
+        model_training_section()
+        # explainability_section()
+        # export_section()
+        # advisor_section()
+
+    with col_advisor:
+        advisor_panel()
+
+        
+
+
+
+    
 
 if __name__ == "__main__":
     st.set_page_config(
