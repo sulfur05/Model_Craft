@@ -9,6 +9,9 @@ from sections.model_training import model_training_section
 # from sections.export import export_section  # later
 from sections.advisor import advisor_panel  # later
 
+from dotenv import load_dotenv
+load_dotenv()
+
 
 def main():
     st.title("ModelCraft – ML Workflow Assistant")

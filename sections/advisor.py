@@ -3,6 +3,9 @@ import textwrap
 import streamlit as st
 
 import pandas as pd
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 def _build_context_summary() -> str:
@@ -61,12 +64,14 @@ def _call_llm(prompt: str) -> str:
         "https://api.groq.com/openai/v1/chat/completions",
         headers={"Authorization": f"Bearer {api_key}"},
         json={
-            "model": "llama3-8b-8192",
+            "model": "llama-3.3-70b-versatile",
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=30,
     )
+
     resp.raise_for_status()
+    
     data = resp.json()
     return data["choices"][0]["message"]["content"]
 
