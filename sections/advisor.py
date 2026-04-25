@@ -69,9 +69,8 @@ def _call_llm(prompt: str) -> str:
         },
         timeout=30,
     )
-
-    resp.raise_for_status()
     
+    resp.raise_for_status()
     data = resp.json()
     return data["choices"][0]["message"]["content"]
 

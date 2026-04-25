@@ -9,6 +9,11 @@ from sections.model_training import model_training_section
 # from sections.export import export_section  # later
 from sections.advisor import advisor_panel  # later
 
+def load_css(path: str) -> None:
+    with open(path) as f:
+        css = f.read()
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -24,6 +29,8 @@ def main():
     )
 
     col_main, col_advisor = st.columns([3, 1])
+
+    load_css("style.css")
 
     with col_main:
         dataset_upload_section()
