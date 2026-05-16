@@ -205,7 +205,7 @@ def _run_model_comparison(task_type: str, model_names, config):
     
     preprocessor = config['preprocessor']
     X_train = config['X_train']
-    y_train = config['Y_train']
+    y_train = config['y_train']
     X_test = config['X_test']
     y_test = config['y_test']
 
