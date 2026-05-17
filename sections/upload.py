@@ -55,7 +55,7 @@ def _validate_and_preview_dataframe(df: pd.DataFrame):
     st.write("First few rows of your data:")
     st.dataframe(df.head())
     st.write("Column types:")
-    st.write(df.dtypes.to_frame("dtype"))
+    st.dataframe(df.dtypes.astype(str).to_frame("dtype"))
 
     st.info(
         "In simple terms: each row is an example, and each column is a feature or variable."
