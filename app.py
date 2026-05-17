@@ -4,7 +4,7 @@ from sections.upload import dataset_upload_section
 from sections.eda import eda_section
 from sections.preprocessing import preprocessing_section
 from sections.model_training import model_training_section
-from sections.explainability import explainability_section
+from sections.explainability_test import explainability_section
 
 # from sections.explainability import explainability_section  # later
 # from sections.export import export_section  # later

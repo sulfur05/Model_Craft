@@ -52,9 +52,14 @@ def _compute_shap_values_cached(explainer, X: pd.DataFrame, model_fp: str, sampl
     - Decorated with `@st.cache_data` to reuse results across reruns when inputs don't change.
     """
     # Subsample rows deterministically for reproducibility
-    Xs = X.sample(min(len(X), sample_n), random_state=0)
+    X_sample_raw = X.sample(min(len(X), sample_n), random_state=0)
+    # X_sample_raw = Xn.sample()
+    X_sample = pd.DataFrame(st.session_state["preprocessor"].transform(X_sample_raw), columns=st.session_state["feature_columns"])
+
     # Compute SHAP values for the sample (explainer can return an Explanation object)
-    shap_values = explainer(Xs)
+
+    shap_values = explainer(X_sample)
+    Xs = X_sample
     return shap_values, Xs
 
 def _ensure_trained_model():
