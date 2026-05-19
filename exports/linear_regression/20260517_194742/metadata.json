@@ -1,0 +1,21 @@
+{
+  "trained_model_name": "Linear Regression",
+  "version": "20260517_194742",
+  "created_at": "2026-05-17T19:47:42",
+  "task_type": "regression",
+  "target_column": "Recovery_Score",
+  "dataset_shape": [
+    8379,
+    19
+  ],
+  "feature_count": 18,
+  "metrics": {},
+  "params": {
+    "copy_X": true,
+    "fit_intercept": true,
+    "n_jobs": null,
+    "positive": false,
+    "tol": 1e-06
+  },
+  "bundle_path": "exports/linear_regression/20260517_194742/model_bundle.joblib"
+}

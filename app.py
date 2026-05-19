@@ -1,25 +1,24 @@
 import streamlit as st
-
-from sections.upload import dataset_upload_section
-from sections.eda import eda_section
-from sections.preprocessing import preprocessing_section
-from sections.model_training import model_training_section
-from sections.explainability_test import explainability_section
-
-# from sections.explainability import explainability_section  # later
-# from sections.export import export_section  # later
-from sections.advisor import advisor_panel  # later
-
-def load_css(path: str) -> None:
-    with open(path) as f:
-        css = f.read()
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
-
 from dotenv import load_dotenv
+
+from sections.advisor import advisor_panel
+from sections.eda import eda_section
+from sections.explainability_test import explainability_section
+from sections.export import export_section
+from sections.model_training import model_training_section
+from sections.preprocessing import preprocessing_section
+from sections.upload import dataset_upload_section
+
 load_dotenv()
 
 
-def main():
+def load_css(path: str) -> None:
+    with open(path, "r", encoding="utf-8") as file:
+        css = file.read()
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
+
+def main() -> None:
     st.title("ModelCraft – ML Workflow Assistant")
     st.write(
         """
@@ -29,9 +28,9 @@ def main():
         """
     )
 
-    col_main, col_advisor = st.columns([3, 1])
-
     load_css("style.css")
+
+    col_main, col_advisor = st.columns([3, 1])
 
     with col_main:
         dataset_upload_section()
@@ -39,17 +38,11 @@ def main():
         preprocessing_section()
         model_training_section()
         explainability_section()
-        # export_section()
-        # advisor_section()
+        export_section()
 
     with col_advisor:
         advisor_panel()
 
-
-
-
-
-    
 
 if __name__ == "__main__":
     st.set_page_config(
