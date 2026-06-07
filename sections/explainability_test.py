@@ -91,15 +91,27 @@ def explainability_section():
         if _is_classifier_model(model):
             shap_values = _select_positive_class(shap_values)
 
-        st.subheader("Global feature importance")
-        fig1 = plt.figure(figsize=(8, 5))
-        sp.plots.bar(shap_values, max_display=15, show=False)
-        st.pyplot(fig1, clear_figure=True)
+        # 🔴 CHANGE 4: Organize SHAP in tabs
+        tab1, tab2 = st.tabs(["📊 Simple Explanation", "🔍 Detailed Analysis"])
+        
+        with tab1:
+            st.subheader("Top Features Affecting Predictions")
+            st.markdown("These are the most important features influencing your model's decisions.")
+            fig1 = plt.figure(figsize=(8, 5))
+            sp.plots.bar(shap_values, max_display=10, show=False)
+            st.pyplot(fig1, clear_figure=True)
 
-        st.subheader("Feature impact distribution")
-        fig2 = plt.figure(figsize=(8, 5))
-        sp.plots.beeswarm(shap_values, max_display=15, show=False)
-        st.pyplot(fig2, clear_figure=True)
+        with tab2:
+            st.subheader("Global feature importance")
+            fig1 = plt.figure(figsize=(8, 5))
+            sp.plots.bar(shap_values, max_display=15, show=False)
+            st.pyplot(fig1, clear_figure=True)
+
+            st.subheader("Feature impact distribution")
+            st.markdown("Shows how different feature values impact predictions.")
+            fig2 = plt.figure(figsize=(8, 5))
+            sp.plots.beeswarm(shap_values, max_display=15, show=False)
+            st.pyplot(fig2, clear_figure=True)
 
 
 explainability_section()

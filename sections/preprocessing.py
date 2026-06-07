@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, MinMaxScaler, RobustScaler, OrdinalEncoder
@@ -153,6 +154,28 @@ def preprocessing_section():
             max_value=0.4,
             value=0.2,
             step=0.05,
+        )
+
+        # 🔴 CHANGE 5: Visualize train/test split
+        train_size = 1 - test_size
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            sizes = [train_size * 100, test_size * 100]
+            colors = ['#4CAF50', '#FF9800']
+            fig, ax = plt.subplots(figsize=(6, 2))
+            ax.barh(['Training Data', 'Test Data'], sizes, color=colors)
+            ax.set_xlabel('Percentage (%)')
+            ax.set_xlim(0, 100)
+            for i, (label, size) in enumerate(zip(['Training', 'Test'], sizes)):
+                ax.text(size/2, i, f'{size:.0f}%', ha='center', va='center', 
+                       color='white', fontweight='bold', fontsize=12)
+            plt.tight_layout()
+            st.pyplot(fig, use_container_width=True)
+        
+        st.info(
+            "💡 **Why split data?** We train on 'Training Data' and test on 'Test Data'. "
+            "If we test on the same data we trained on, the model will seem much better than it really is. "
+            "Test data is like a surprise exam!"
         )
 
         task_type = st.session_state.get("task_type", "classification")

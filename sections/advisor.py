@@ -90,6 +90,34 @@ def advisor_panel():
     if "advisor_messages" not in st.session_state:
         st.session_state["advisor_messages"] = []
 
+    # 🔴 CHANGE 6: Proactive advisor tips
+    # Add automatic tips at key milestones
+    if "dataset" in st.session_state and len(st.session_state["advisor_messages"]) == 0:
+        dataset = st.session_state["dataset"]
+        st.session_state["advisor_messages"].append({
+            "role": "advisor",
+            "content": f"Great! I see you have {dataset.shape[0]:,} rows and {dataset.shape[1]} features. "
+                      f"Next, let's explore your data in the EDA section to understand patterns and distributions."
+        })
+    
+    if "preprocessor" in st.session_state and "advisor_tip_preprocessing" not in st.session_state:
+        st.session_state["advisor_messages"].append({
+            "role": "advisor",
+            "content": "✅ Data is ready! Your preprocessing pipeline is configured. "
+                      "Now let's train a model. Random Forest is a great starting point for most datasets!"
+        })
+        st.session_state["advisor_tip_preprocessing"] = True
+    
+    if "trained_model" in st.session_state and "advisor_tip_training" not in st.session_state:
+        accuracy = st.session_state.get("accuracy", st.session_state.get("r2_score", 0))
+        metric_name = "accuracy" if "accuracy" in st.session_state else "R² score"
+        st.session_state["advisor_messages"].append({
+            "role": "advisor",
+            "content": f"🎯 Model trained! Your {metric_name}: {accuracy:.2%}. "
+                      f"Next, let's explore the Explainability section to understand which features drove predictions!"
+        })
+        st.session_state["advisor_tip_training"] = True
+
     st.markdown("### Ask ModelCraft")
 
     st.caption(
@@ -97,14 +125,42 @@ def advisor_panel():
         "dataset, target, and model choices as context."
     )
 
-    # Show history
-    for msg in st.session_state["advisor_messages"]:
-        role = msg["role"]
-        content = msg["content"]
-        if role == "user":
-            st.markdown(f"**You:** {content}")
+    # Show history in a scrollable container
+    with st.container(border=True, height=400):
+        if not st.session_state["advisor_messages"]:
+            st.markdown(
+                """
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #888;">
+                    <p style="text-align: center; font-size: 14px;">
+                        💬 Your chat will appear here<br>
+                        <span style="font-size: 12px;">Ask a question to get started!</span>
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         else:
-            st.markdown(f"**Advisor:** {content}")
+            for msg in st.session_state["advisor_messages"]:
+                role = msg["role"]
+                content = msg["content"]
+                if role == "user":
+                    st.markdown(f"**You:** {content}")
+                else:
+                    st.markdown(f"**Advisor:** {content}")
+            
+            # Auto-scroll anchor
+            st.markdown('<div id="chat-bottom"></div>', unsafe_allow_html=True)
+            st.markdown(
+                """
+                <script>
+                    let element = document.getElementById("chat-bottom");
+                    if (element) {
+                        element.scrollIntoView({behavior: "smooth", block: "end"});
+                    }
+                </script>
+                """,
+                unsafe_allow_html=True,
+            )
 
     # Input box
     user_input = st.text_area(
@@ -153,6 +209,5 @@ def advisor_panel():
             {"role": "assistant", "content": answer}
         )
 
-        # Clear input box
-        # st.session_state["advisor_input"] = ""
-        # st.experimental_rerun()
+        # Rerun to display the response immediately
+        st.rerun()

@@ -1,0 +1,30 @@
+{
+  "trained_model_name": "Logistic Regression",
+  "version": "20260607_220550",
+  "created_at": "2026-06-07T22:05:50",
+  "task_type": "classification",
+  "target_column": "Dangerous",
+  "dataset_shape": [
+    871,
+    7
+  ],
+  "feature_count": 6,
+  "metrics": {},
+  "params": {
+    "C": 1.0,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 500,
+    "n_jobs": -1,
+    "penalty": "deprecated",
+    "random_state": null,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "bundle_path": "exports/logistic_regression/20260607_220550/model_bundle.joblib"
+}

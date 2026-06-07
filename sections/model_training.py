@@ -292,6 +292,22 @@ def model_training_section():
         default_model_index = 0
         selected_model = st.selectbox("Model", options=model_options, index=default_model_index)
 
+        # 🔴 CHANGE 3: Add model recommendation
+        if selected_model == "Random Forest Classifier":
+            st.success(
+                "💡 **Great choice!** Random Forest works well for classification. "
+                "It handles mixed data types and doesn't need much tuning. Perfect for beginners!"
+            )
+        elif selected_model == "Logistic Regression":
+            st.info(
+                "💡 Logistic Regression is fast and interpretable. Good for linear relationships."
+            )
+        elif selected_model == "Random Forest Regressor":
+            st.success(
+                "💡 **Great choice!** Random Forest works well for regression too. "
+                "It automatically captures non-linear patterns."
+            )
+
         params = {}
         st.markdown("**Model hyperparameters (basic)**")
         if task_type == "classification":
