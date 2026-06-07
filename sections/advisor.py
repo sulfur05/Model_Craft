@@ -1,5 +1,5 @@
 import os
-import textwrap
+import requests
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -10,36 +10,36 @@ def _mentor_content():
 
     if "trained_model" in st.session_state:
         return (
-            "Your model has finished training.",
-            "I'd explore Explainability next to understand what influenced predictions.",
-            "Feature importance often reveals surprising patterns in your data."
+            "🎉 Your model finished training.",
+            "I'd explore Explainability next.",
+            "Feature importance often reveals surprising insights."
         )
 
     if "preprocessor" in st.session_state:
         return (
-            "Your data is ready for machine learning.",
-            "I'd train a model next and use it as a baseline.",
-            "Don't worry about finding the perfect model immediately."
+            "✅ Your data is ready.",
+            "I'd train a model next.",
+            "Start with a baseline before tuning."
         )
 
     if st.session_state.get("eda_complete", False):
         return (
-            "Your dataset has been explored.",
+            "📊 Nice work exploring the data.",
             "I'd configure preprocessing next.",
-            "Good preprocessing often improves model quality more than changing algorithms."
+            "Good preprocessing often matters more than model choice."
         )
 
     if "dataset" in st.session_state:
         return (
-            "Your dataset is uploaded and ready.",
-            "I'd run EDA next before training anything.",
-            "Understanding your data early prevents many common ML mistakes."
+            "📁 Your dataset is uploaded.",
+            "I'd run EDA next.",
+            "Understanding the data early prevents many ML mistakes."
         )
 
     return (
-        "Welcome to ModelCraft.",
+        "👋 Welcome to ModelCraft.",
         "Start by uploading a dataset.",
-        "Most ML projects begin with understanding the data, not choosing a model."
+        "Every ML workflow begins with understanding the data."
     )
 
 
@@ -48,12 +48,7 @@ def _call_llm(prompt):
     api_key = os.getenv("GROQ_API_KEY")
 
     if not api_key:
-        return (
-            "No AI backend configured. "
-            "Add GROQ_API_KEY to enable mentor responses."
-        )
-
-    import requests
+        return "Missing GROQ_API_KEY."
 
     response = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
@@ -79,83 +74,77 @@ def _call_llm(prompt):
 
 def advisor_panel():
 
-        observation, recommendation, note = _mentor_content()
-    
-        st.markdown("## 🧠 AI Mentor")
-    
-        st.info(
-            f"""
-    {observation}
+    observation, recommendation, note = _mentor_content()
 
-    {recommendation}
-    """
+    st.markdown(
+        """
+        <div class="mentor-title">
+            🧠 AI Mentor
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="mentor-card">
+
+        <div>
+        {observation}
+        </div>
+
+        <div class="mentor-recommendation">
+        {recommendation}
+        </div>
+
+        <div style="
+            font-size:0.9rem;
+            opacity:0.8;
+            margin-top:10px;
+        ">
+        💡 {note}
+        </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    with st.popover("💬 Ask Mentor"):
+
+        question = st.text_area(
+            "Question",
+            placeholder="Why is my accuracy low?",
+            height=100,
         )
 
-        st.caption(f"💡 {note}")
+        if st.button(
+            "Send",
+            use_container_width=True,
+            key="mentor_send"
+        ):
 
-        st.divider()
+            if not question.strip():
+                return
 
-        if "mentor_chat_open" not in st.session_state:
-            st.session_state["mentor_chat_open"] = False
+            prompt = f"""
+You are ModelCraft AI Mentor.
 
-        if not st.session_state["mentor_chat_open"]:
+The user is a beginner learning machine learning.
 
-            if st.button(
-                "💬 Ask a Question",
-                use_container_width=True
-            ):
-                st.session_state["mentor_chat_open"] = True
-                st.rerun()
+Question:
+{question}
 
-            return
+Rules:
+- Maximum 80 words
+- Use simple language
+- Give practical advice
+- Avoid jargon
+"""
 
-        with st.container(border=True):
+            with st.spinner("Thinking..."):
+                answer = _call_llm(prompt)
 
-            question = st.text_area(
-                "",
-                placeholder="Why is my accuracy low?",
-                label_visibility="collapsed",
-                height=100,
-            )
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-
-                send = st.button(
-                    "Send",
-                    use_container_width=True,
-                )
-
-            with col2:
-
-                close = st.button(
-                    "Close",
-                    use_container_width=True,
-                )
-
-            if close:
-                st.session_state["mentor_chat_open"] = False
-                st.rerun()
-
-            if send and question.strip():
-
-                prompt = f"""
-    You are ModelCraft AI Mentor.
-
-    The user is a beginner learning machine learning.
-
-    Question:
-    {question}
-
-    Rules:
-    - Keep under 100 words
-    - Use simple language
-    - Give practical advice
-    - Avoid jargon
-    """
-
-                with st.spinner("Thinking..."):
-                    answer = _call_llm(prompt)
-
-                st.success(answer)
+            st.success(answer)

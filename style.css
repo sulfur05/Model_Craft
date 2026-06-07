@@ -1,3 +1,68 @@
 .st-emotion-cache-wfksaw{
     height: 100%;
 }
+
+.floating-mentor-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+}
+
+.floating-mentor-panel {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 340px;
+
+    background: var(--background-color);
+    border: 1px solid rgba(128,128,128,0.2);
+    border-radius: 16px;
+
+    padding: 16px;
+
+    z-index: 9998;
+
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.15);
+}
+
+button[kind="secondary"] {
+    border-radius: 999px;
+}
+
+.floating-mentor {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 99999;
+}
+
+/* Make right column sticky */
+div[data-testid="stHorizontalBlock"] > div:last-child {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+}
+
+/* Mentor card */
+.mentor-card {
+    border: 1px solid rgba(128,128,128,0.15);
+    border-radius: 12px;
+    padding: 16px;
+    background: rgba(255,255,255,0.02);
+}
+
+/* Mentor title */
+.mentor-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+/* Recommendation text */
+.mentor-recommendation {
+    font-weight: 600;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}

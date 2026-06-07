@@ -39,7 +39,7 @@ def main() -> None:
         model_training_section()
         explainability_section()
         export_section()
-
+    
     with col_advisor:
         advisor_panel()
 
