@@ -30,7 +30,7 @@ def main() -> None:
 
     load_css("style.css")
 
-    col_main, col_advisor = st.columns([3, 1])
+    col_main, col_advisor = st.columns([4, 1])
 
     with col_main:
         dataset_upload_section()

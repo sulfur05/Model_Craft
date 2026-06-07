@@ -324,3 +324,5 @@ def eda_section():
                 numeric_cols,
                 categorical_cols
             )
+
+        st.session_state["eda_complete"] = True
