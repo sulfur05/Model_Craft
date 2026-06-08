@@ -342,8 +342,56 @@ def model_training_section():
 
         if st.button("Train model"):
             with st.spinner("Training model and evaluating on test data..."):
-                _train_and_evaluate(task_type, selected_model, config, params)
-            st.success("Training complete. See metrics and plots above.")
+                _train_and_evaluate(
+                    task_type,
+                    selected_model,
+                    config,
+                    params
+                )
+        
+            st.success("Training complete.")
+
+            if "trained_model" in st.session_state:
+
+                st.markdown("---")
+                st.subheader("🔍 Compare Models")
+
+                compare_selection = st.multiselect(
+                    "Models to compare",
+                    options=model_options,
+                    default=model_options,
+                )
+
+                metric_label = (
+                    "Accuracy"
+                    if task_type == "classification"
+                    else "R²"
+                )
+
+                st.caption(
+                    f"Best model will be selected using {metric_label}."
+                )
+
+                if st.button(
+                    "Run Model Comparison",
+                    key="run_model_comparison",
+                ):
+                    with st.spinner(
+                        "Training and evaluating all selected models..."
+                    ):
+                        _run_model_comparison(
+                            task_type,
+                            compare_selection,
+                            config,
+                        )
+
+                if "model_comparison_results" in st.session_state:
+                    st.dataframe(
+                        st.session_state["model_comparison_results"],
+                        use_container_width=True,
+                    )
+
+
             st.markdown("---")
             st.subheader("Optional : compare models")
 
@@ -356,9 +404,10 @@ def model_training_section():
 
             if compare_models:
                 compare_selection = st.multiselect(
-                    options = model_options,
-                    default = model_options,
-                    help = "All selected models will be trained with simple default settings",
+                    "Models to compare",
+                    options=model_options,
+                    default=model_options,
+                    help="All selected models will be trained with simple default settings",
                 )
 
                 metric_label = "accuracy" if task_type =='classification' else "R2"
