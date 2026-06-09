@@ -67,7 +67,7 @@ def dataset_eda(df, numeric_cols, categorical_cols):
     score -= min(severe_outliers * 3, 15)
     score = max(score, 0)
 
-    st.subheader("🏥 Dataset Report Card")
+    st.subheader("+ Dataset Report Card")
 
     if score >= 85:
         st.success(f"Dataset Readiness Score: {score}/100")
@@ -90,30 +90,30 @@ def dataset_eda(df, numeric_cols, categorical_cols):
     # KEY FINDINGS
     # -----------------------------
 
-    st.subheader("🔍 Key Findings")
+    st.subheader("Key Findings")
 
     findings = []
 
     if missing_ratio == 0:
-        findings.append("✅ No missing values detected.")
+        findings.append("-> No missing values detected.")
     elif missing_ratio < 0.05:
-        findings.append("🟡 Small amount of missing data detected.")
+        findings.append("-> Small amount of missing data detected.")
     else:
-        findings.append("🔴 Significant missing data detected.")
+        findings.append("-> Significant missing data detected.")
 
     if strong_corr_count > 0:
         findings.append(
-            f"🟡 {strong_corr_count} strongly correlated feature pairs found."
+            f"-> {strong_corr_count} strongly correlated feature pairs found."
         )
     else:
-        findings.append("✅ No strong feature redundancy detected.")
+        findings.append("-> No strong feature redundancy detected.")
 
     if severe_outliers > 0:
         findings.append(
-            f"🟡 {severe_outliers} feature(s) contain many outliers."
+            f"-> {severe_outliers} feature(s) contain many outliers."
         )
     else:
-        findings.append("✅ No major outlier issues detected.")
+        findings.append("-> No major outlier issues detected.")
 
     target_column = st.session_state.get("target_column")
 
@@ -122,11 +122,11 @@ def dataset_eda(df, numeric_cols, categorical_cols):
             share = df[target_column].value_counts(normalize=True).iloc[0]
             if share > 0.70:
                 findings.append(
-                    "🔴 Target column appears heavily imbalanced."
+                    "-> Target column appears heavily imbalanced."
                 )
             else:
                 findings.append(
-                    "✅ Target distribution appears healthy."
+                    "-> Target distribution appears healthy."
                 )
 
     for item in findings:
@@ -136,7 +136,7 @@ def dataset_eda(df, numeric_cols, categorical_cols):
     # RECOMMENDATIONS
     # -----------------------------
 
-    st.subheader("🤖 ModelCraft Recommendations")
+    st.subheader("ModelCraft Recommends you to (optional)")
 
     recommendations = []
 
@@ -172,7 +172,7 @@ def dataset_eda(df, numeric_cols, categorical_cols):
     # WHY THESE RECOMMENDATIONS?
     # -----------------------------
 
-    with st.expander("📘 Why did ModelCraft make these recommendations?"):
+    with st.expander("Why did ModelCraft make these recommendations?"):
 
         st.write(
             """
@@ -194,7 +194,7 @@ def dataset_eda(df, numeric_cols, categorical_cols):
 
     if numeric_cols:
 
-        with st.expander("🔎 Explore Individual Features"):
+        with st.expander("Explore Individual Features"):
 
             feature = st.selectbox(
                 "Choose a feature",

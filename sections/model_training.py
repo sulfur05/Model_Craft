@@ -6,6 +6,8 @@ import seaborn as sns
 
 from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -58,15 +60,21 @@ def _get_model_options(task_type: str):
             "Ridge Regression",
             "Random Forest Regressor",
         ]
+
         if HAS_XGBOOST:
             models.append("XGBoost Regressor")
+
     else:
         models = [
             "Logistic Regression",
             "Random Forest Classifier",
+            "SVM Classifier",
+            "KNN Classifier",
         ]
+
         if HAS_XGBOOST:
             models.append("XGBoost Classifier")
+
     return models
 
 
@@ -111,6 +119,16 @@ def _build_model(task_type: str, model_name: str, params: dict):
                 use_label_encoder=False,
                 eval_metric="logloss",
             )
+        if model_name == "SVM Classifier":
+            return SVC(
+                probability=True,
+                random_state=42
+            )
+
+        if model_name == "KNN Classifier":
+            return KNeighborsClassifier(
+                n_neighbors=5
+            )
     raise ValueError(f"Unsupported model: {model_name}")
 
 
@@ -126,9 +144,31 @@ def _train_and_evaluate(task_type: str, model_name: str, config, params: dict):
     X_test_proc = preprocessor.transform(X_test)
 
     model = _build_model(task_type, model_name, params)
-    model.fit(X_train_proc, y_train)
 
-    y_pred = model.predict(X_test_proc)
+    
+    if "XGBoost" in model_name:
+
+        from sklearn.preprocessing import LabelEncoder
+
+        le = LabelEncoder()
+
+        y_train_enc = le.fit_transform(y_train)
+
+        model.fit(X_train_proc, y_train_enc)
+
+        y_pred_enc = model.predict(X_test_proc)
+
+        y_pred = le.inverse_transform(
+            y_pred_enc.astype(int)
+        )
+
+    else:
+
+        model.fit(X_train_proc, y_train)
+
+        y_pred = model.predict(X_test_proc)
+
+    # y_pred = model.predict(X_test_proc)
 
     st.session_state["trained_model"] = model
     st.session_state["trained_model_name"] = model_name
@@ -220,17 +260,41 @@ def _run_model_comparison(task_type: str, model_names, config):
 
     for name in model_names:
         model = _build_model(task_type, name, params={})
-        model.fit(X_train_proc, y_train)
-        y_pred = model.predict(X_test_proc)
+        if "XGBoost" in name:
+
+            from sklearn.preprocessing import LabelEncoder
+        
+            le = LabelEncoder()
+        
+            y_train_enc = le.fit_transform(y_train)
+        
+            model.fit(X_train_proc, y_train_enc)
+        
+            y_pred_enc = model.predict(X_test_proc)
+        
+            y_pred = le.inverse_transform(
+                y_pred_enc.astype(int)
+            )
+        
+        else:
+        
+            model.fit(X_train_proc, y_train)
+        
+            y_pred = model.predict(X_test_proc)
 
 
         if task_type == 'classification':
             acc = accuracy_score(y_test, y_pred)
+            prec = precision_score(y_test, y_pred, average="weighted", zero_division=0)
+            rec = recall_score(y_test, y_pred, average="weighted", zero_division=0)
             f1 = f1_score(y_test, y_pred, average="weighted", zero_division=0)
+
             row = {
-                "Model" : name,
-                "Accuracy" : acc,
-                "F1 (weighted)": f1,
+                "Model": name,
+                "Accuracy": round(acc, 4),
+                "Precision": round(prec, 4),
+                "Recall": round(rec, 4),
+                "F1": round(f1, 4),
             }
 
             score = acc
@@ -351,45 +415,39 @@ def model_training_section():
         
             st.success("Training complete.")
 
-            if "trained_model" in st.session_state:
-
-                st.markdown("---")
-                st.subheader("🔍 Compare Models")
-
-                compare_selection = st.multiselect(
-                    "Models to compare",
-                    options=model_options,
-                    default=model_options,
-                )
-
-                metric_label = (
-                    "Accuracy"
-                    if task_type == "classification"
-                    else "R²"
-                )
-
-                st.caption(
-                    f"Best model will be selected using {metric_label}."
-                )
-
-                if st.button(
-                    "Run Model Comparison",
-                    key="run_model_comparison",
+        if "trained_model" in st.session_state:
+            st.markdown("---")
+            st.subheader("🔍 Compare Models")
+            compare_selection = st.multiselect(
+                "Models to compare",
+                options=model_options,
+                default=model_options,
+            )
+            metric_label = (
+                "Accuracy"
+                if task_type == "classification"
+                else "R²"
+            )
+            st.caption(
+                f"Best model will be selected using {metric_label}."
+            )
+            if st.button(
+                "Run Model Comparison",
+                key="run_model_comparison",
+            ):
+                with st.spinner(
+                    "Training and evaluating all selected models..."
                 ):
-                    with st.spinner(
-                        "Training and evaluating all selected models..."
-                    ):
-                        _run_model_comparison(
-                            task_type,
-                            compare_selection,
-                            config,
-                        )
-
-                if "model_comparison_results" in st.session_state:
-                    st.dataframe(
-                        st.session_state["model_comparison_results"],
-                        use_container_width=True,
+                    _run_model_comparison(
+                        task_type,
+                        compare_selection,
+                        config,
                     )
+            if "model_comparison_results" in st.session_state:
+                st.dataframe(
+                    st.session_state["model_comparison_results"],
+                    use_container_width=True,
+                )
 
 
             st.markdown("---")

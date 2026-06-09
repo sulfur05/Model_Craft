@@ -39,7 +39,7 @@ def _mentor_content():
         )
 
     return (
-        "👋 Welcome to ModelCraft.",
+        "Welcome to ModelCraft.",
         "Start by uploading a dataset.",
         "Most ML projects begin with understanding the data."
     )
@@ -141,7 +141,7 @@ def advisor_panel():
     # CONVERSATION
     # =====================================================
 
-    st.markdown("### Conversation")
+    st.markdown("### Chat")
 
     with st.container(
         height=250,
